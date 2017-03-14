@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>舆情监测平台</title>
+    <!-- Bootstrap -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+
+    <script type="text/javascript" src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="header" th:include="header :: fragment-header"></div>
+
+    <div style="padding-left: 20px;padding-top: -15px;padding-right: 10px;margin-top: -15px;">
+        <div style="float: left;margin-bottom: 20px;">
+            <a href="#">
+                <button type="button" class="btn btn-primary">添加训练集</button>
+            </a>
+        </div>
+        <table class="table table-hover table-bordered">
+            <tr>
+                <th>内容</th>
+                <th>标签</th>
+                <th>操作</th>
+            </tr>
+            <tbody>
+            <tr th:each="trainset : ${trainsetList}">
+                <td th:text="${trainset.getContents()}"></td>
+                <td th:text="${trainset.getLabelLev()}"></td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            操作 <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" style="min-width: 30px;">
+                            <li><a href="#">删除</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">编辑</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p>page: <span th:text="${pageSize}"></span></p>
+    <p>totalCount: <span th:text="${totalCount}"></span></p>
+    <p>totalPage: <span th:text="${totalPage}"></span></p>
+
+</body>
+</html>
