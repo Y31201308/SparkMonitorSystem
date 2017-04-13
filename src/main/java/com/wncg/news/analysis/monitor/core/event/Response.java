@@ -1,8 +1,12 @@
 package com.wncg.news.analysis.monitor.core.event;
 
+import com.wncg.news.analysis.monitor.core.matadata.ConfigurableImmutable;
+import com.wncg.news.analysis.monitor.core.matadata.EventResult;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class Response<T> {
+public class Response<T> extends EventResult implements ConfigurableImmutable {
 
     private int pageSize;
     private int currentPageNum;
@@ -11,6 +15,7 @@ public class Response<T> {
     private List<T> data;
 
     public Response() {
+
     }
 
     public Response(int pageSize, int currentPageNum, int totalCount, List<T> data) {
@@ -31,6 +36,11 @@ public class Response<T> {
         return this.totalPage;
     }
 
+    public void setData(T data){
+        this.data = new ArrayList<>(1);
+        this.data.add(data);
+    }
+
     public List<T> getData() {
         return data;
     }
@@ -41,6 +51,14 @@ public class Response<T> {
 
     public void setCurrentPageNum(int currentPageNum) {
         this.currentPageNum = currentPageNum + 1;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public int getCurrentPageNum() {
+        return currentPageNum;
     }
 
     public void setTotalCount(int totalCount) {

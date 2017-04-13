@@ -1,7 +1,7 @@
 package com.wncg.news.analysis.monitor.core.event;
 
 
-public class Request<T> {
+public class QueryNewsRequest {
     public static final int DEFAULT_EVERY_PAGE_COUNT = 50;
     public static final int EVERY_PAGE_MAX_COUNT = 500;
     public static final int EVERY_PAGE_MIN_COUNT = 10;
@@ -11,12 +11,13 @@ public class Request<T> {
 
     private int currentPageNum = DEFAULT_PAGE_NUM;
 
-    private T data;
+    private String newsUrl;
 
-    public Request() {
+    public QueryNewsRequest() {
+
     }
 
-    public Request(int pageSize, int pageNum) {
+    public QueryNewsRequest(int pageSize, int pageNum) {
         if(pageSize < EVERY_PAGE_MIN_COUNT){
             this.pageSize = EVERY_PAGE_MIN_COUNT;
         }else if(pageSize > EVERY_PAGE_MAX_COUNT){
@@ -30,6 +31,14 @@ public class Request<T> {
         }else{
             this.currentPageNum = pageNum - 1;
         }
+    }
+
+    public String getNewsUrl() {
+        return newsUrl;
+    }
+
+    public void setNewsUrl(String newsUrl) {
+        this.newsUrl = newsUrl;
     }
 
     public int getPageSize() {

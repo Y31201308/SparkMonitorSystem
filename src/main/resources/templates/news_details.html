@@ -16,23 +16,29 @@
 <body>
     <div id="header" th:include="header :: fragment-header"></div>
 
+    <div id="eventMsg" th:include="common :: fragment-eventMsg"></div>
+
     <div style="padding-left: 20px;padding-top: -15px;padding-right: 10px;margin-top: -15px;">
         <table class="table table-hover table-bordered">
             <tr>
                 <th>新闻标题</th>
+                <th>PureTitle</th>
                 <th>URL</th>
-                <th>关键词</th>
-                <!--<th>新闻内容</th>-->
+                <!--<th>关键词</th>-->
                 <th>发布时间</th>
                 <th>操作</th>
             </tr>
             <tbody>
+                <form id="optionForm" method="POST">
+                    <input id="newsUrl" class="hidden" name="newsUrl"/>
+                </form>
                 <tr th:each="newsDetails : ${newsList}">
-                    <td th:text="${newsDetails.getTitle()}"></td>
+                    <td th:text="${newsDetails.getNewsTitle()}"></td>
+                    <td th:text="${newsDetails.getPureTitle()}"></td>
                     <td>
-                        <a target="_blank" th:href="${newsDetails.get_id()}" th:text="${newsDetails.get_id()}"></a>
+                        <a target="_blank" th:href="${newsDetails.getNewsUrl()}" th:text="${newsDetails.getNewsUrl()}"></a>
                     </td>
-                    <td th:text="${newsDetails.getKey_words()}"></td>
+                    <!--<td th:text="${newsDetails.getKey_words()}"></td>-->
                     <!--<td th:text="${newsDetails.getContents()}"></td>-->
                     <td th:text="${newsDetails.getPtime()}"></td>
                     <td>
@@ -41,20 +47,70 @@
                                 操作 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" style="min-width: 30px;">
-                                <li><a href="#">删除</a></li>
+                                <li>
+                                    <a onclick="option(this)" method="/deleteNews" th:attr="newsUrl=${newsDetails.getNewsUrl()}">删除</a>
+                                </li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#">编辑</a></li>
+                                <li>
+                                    <a onclick="option(this)" method="/queryNewsByUrl" th:attr="newsUrl=${newsDetails.getNewsUrl()}">编辑</a>
+                                </li>
                             </ul>
                         </div>
                     </td>
                 </tr>
             </tbody>
+            <tfoot>
+            </tfoot>
         </table>
+        <div>
+            <form id="pageForm" th:action="@{/queryNewsByPage}" method="POST">
+                <input class="hidden" name="pageSize" th:value="${pageSize}"/>
+                <input id="pageNum" class="hidden" name="pageNo" th:value="${currentPageNum}"/>
+            </form>
+            <nav aria-label="Page navigation" style="float: left;">
+                <p>
+                    totalCount: <span th:text="${totalCount}"></span>&nbsp;&nbsp;&nbsp;
+                    pageSize: <span th:text="${pageSize}"></span>&nbsp;&nbsp;&nbsp;
+                    totalPage: <span th:text="${totalPage}"></span>
+                </p>
+            </nav>
+            <nav aria-label="Page navigation" style="float: right;">
+                <ul class="pagination" style="margin-top: 0px;">
+                    <li>
+                        <a onclick="toPage(this)" aria-label="Previous" th:attr="pageNo=${currentPageNum - 1}">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <span style="margin: 0px;border: 0px;font-size: 20px;padding: 0px 6px 0px 6px;">
+                            <span th:text="${currentPageNum}"></span>
+                            <span>/</span>
+                            <span th:text="${totalPage}"></span>
+                        </span>
+                    </li>
+                    <li>
+                        <a onclick="toPage(this)" th:attr="pageNo=${currentPageNum + 1}">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
+    <script>
+        var toPage = (function (obj) {
+            var pageNo = $(obj).attr("pageNo")
+            $("#pageNum").attr("value",pageNo)
+            $("#pageForm").submit()
+        })
 
-    <p>page: <span th:text="${pageSize}"></span></p>
-    <p>totalCount: <span th:text="${totalCount}"></span></p>
-    <p>totalPage: <span th:text="${totalPage}"></span></p>
-
+        var option = (function (obj) {
+            var method = $(obj).attr("method")
+            var newsUrl = $(obj).attr("newsUrl")
+            $("#optionForm").attr("action", method)
+            $("#newsUrl").attr("value", newsUrl)
+            $("#optionForm").submit()
+        })
+    </script>
 </body>
 </html>

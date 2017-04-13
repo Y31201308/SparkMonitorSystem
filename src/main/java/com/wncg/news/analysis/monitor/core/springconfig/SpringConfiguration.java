@@ -1,8 +1,11 @@
 package com.wncg.news.analysis.monitor.core.springconfig;
 
-//@Configuration
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@Configuration
 //@EnableTransactionManagement
-//@EnableScheduling
+@EnableScheduling
 //@EnableMongoRepositories
 //@EnableAutoConfiguration
 //@EnableMongoAuditing

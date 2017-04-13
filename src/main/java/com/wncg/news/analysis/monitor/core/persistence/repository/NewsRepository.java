@@ -6,14 +6,18 @@ import java.util.List;
 
 public interface NewsRepository{
 
-    List<NewsDetails> queryNews(int pageSize, int pageNum);
+    List<NewsDetails> queryNewsByPage(int pageSize, int pageNum);
+
+    NewsDetails queryNewsById(String newsUrl);
 
     Long queryNewsCount();
 
     void deleteNews(NewsDetails newsDetails);
 
-    void updateNews(NewsDetails old, NewsDetails news);
+    NewsDetails updateNews(NewsDetails old, NewsDetails news);
 
     void addNews(NewsDetails newsDetails);
+
+    void insertNews(NewsDetails newsDetails);
 
 }

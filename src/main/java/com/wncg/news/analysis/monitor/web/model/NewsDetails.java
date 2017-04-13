@@ -1,68 +1,69 @@
 package com.wncg.news.analysis.monitor.web.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.io.Serializable;
-
 @Document(collection = "NewsDetails")
-public class NewsDetails implements Serializable {
+public class NewsDetails{
 
     @Id
-    private String _id;
-    private String title;
-    private String pure_title;
-    private String key_words;
-    private String contents;
+    private String newsUrl;
+    private String newsTitle;
+    private String pureTitle;
+    private String keyWords;
+    private String content;
     private String ptime;
 
-    public NewsDetails(String _id, String title, String pure_title, String key_words, String contents, String ptime) {
-        this._id = _id;
-        this.title = title;
-        this.pure_title = pure_title;
-        this.key_words = key_words;
-        this.contents = contents;
+    public NewsDetails(){}
+
+    public NewsDetails(String newsUrl, String newsTitle, String pureTitle, String keyWords, String content, String ptime) {
+        this.newsUrl = newsUrl;
+        this.newsTitle = newsTitle;
+        this.pureTitle = pureTitle;
+        this.keyWords = keyWords;
+        this.content = content;
         this.ptime = ptime;
     }
 
-    public String get_id() {
-        return _id;
+    public String getNewsUrl() {
+        return newsUrl;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setNewsUrl(String newsUrl) {
+        this.newsUrl = newsUrl;
     }
 
-    public String getTitle() {
-        return title;
+    public String getNewsTitle() {
+        return newsTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setNewsTitle(String newsTitle) {
+        this.newsTitle = newsTitle;
     }
 
-    public String getPure_title() {
-        return pure_title;
+    public String getPureTitle() {
+        return pureTitle;
     }
 
-    public void setPure_title(String pure_title) {
-        this.pure_title = pure_title;
+    public void setPureTitle(String pureTitle) {
+        this.pureTitle = pureTitle;
     }
 
-    public String getKey_words() {
-        return key_words;
+    public String getKeyWords() {
+        return keyWords;
     }
 
-    public void setKey_words(String key_words) {
-        this.key_words = key_words;
+    public void setKeyWords(String keyWords) {
+        this.keyWords = keyWords;
     }
 
-    public String getContents() {
-        return contents;
+    public String getContent() {
+        return content;
     }
 
-    public void setContents(String contents) {
-        this.contents = contents;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getPtime() {
@@ -74,13 +75,46 @@ public class NewsDetails implements Serializable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+
+        if (this == obj)
+            return true;
+
+        if (!(obj instanceof NewsDetails))
+            return false;
+
+        NewsDetails that = (NewsDetails) obj;
+
+        return this.getNewsUrl().equals(that.getNewsUrl())
+                && this.getNewsTitle().equals(that.getNewsTitle())
+                && this.getPureTitle().equals(that.getPureTitle())
+                && this.getKeyWords().equals(that.getKeyWords())
+                && this.getContent().equals(that.getContent())
+                && this.getPtime().equals(that.getPtime());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(getNewsUrl())
+                .append(getNewsTitle())
+                .append(getPureTitle())
+                .append(getKeyWords())
+                .append(getContent())
+                .append(getPtime())
+                .toHashCode();
+    }
+
+    @Override
     public String toString() {
         return "NewsDetails{" +
-                "_id='" + _id + '\'' +
-                ", title='" + title + '\'' +
-                ", pure_title='" + pure_title + '\'' +
-                ", key_words='" + key_words + '\'' +
-                ", contents='" + contents + '\'' +
+                "newsUrl='" + newsUrl + '\'' +
+                ", newsTitle='" + newsTitle + '\'' +
+                ", pureTitle='" + pureTitle + '\'' +
+                ", keyWords='" + keyWords + '\'' +
+                ", content='" + content + '\'' +
                 ", ptime='" + ptime + '\'' +
                 '}';
     }

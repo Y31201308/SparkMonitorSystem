@@ -1,10 +1,15 @@
 package com.wncg.news.analysis.monitor.core.persistence.repository.mongoimpl;
 
+import com.mongodb.WriteResult;
 import com.wncg.news.analysis.monitor.core.persistence.repository.TrainSetRepository;
-import com.wncg.news.analysis.monitor.web.model.TrainingSet;
+import com.wncg.news.analysis.monitor.web.model.TrainSet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,31 +21,54 @@ public class MongoTrainSetRepository implements TrainSetRepository{
     private MongoTemplate mongoTemplate;
 
     @Override
-    public List<TrainingSet> queryTrainSet(int pageSize, int pageNum) {
+    public List<TrainSet> queryTrainSetByPage(int pageSize, int pageNum) {
         Query query = new Query();
-        query.skip(pageSize * pageNum).limit(pageSize);
-        List<TrainingSet> list = mongoTemplate.find(query , TrainingSet.class);
+        query.skip(pageSize * pageNum)
+                .with(new Sort(new Sort.Order(Sort.Direction.DESC,"createTime")))
+                .limit(pageSize);
+        List<TrainSet> list = mongoTemplate.find(query , TrainSet.class);
         return list;
     }
 
     @Override
+    public TrainSet queryTrainSetById(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(id));
+        TrainSet trainSet = mongoTemplate.findOne(query , TrainSet.class);
+        return trainSet;
+    }
+
+    @Override
     public Long queryTrainSetCount() {
-        return mongoTemplate.count(new Query() , "TrainingSet");
+        return mongoTemplate.count(new Query() , "TrainSet");
     }
 
     @Override
-    public void updateTrainSet(TrainingSet oldTrainSet, TrainingSet newTrainSet) {
+    public TrainSet updateTrainSet(TrainSet old, TrainSet news) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(old.getId()));
 
+        Update update = new Update();
+        if (!old.getContent().equals(news.getContent()))
+            update.set("content", news.getContent());
+        if (!old.getLabelLev().equals(news.getLabelLev()))
+            update.set("labelLev", news.getLabelLev());
+
+        TrainSet result = mongoTemplate.findAndModify(query, update,
+                FindAndModifyOptions.options().upsert(false).returnNew(true),
+                TrainSet.class
+        );
+        return result;
     }
 
     @Override
-    public void deleteTrainSet(TrainingSet trainingSet) {
-
+    public void deleteTrainSet(TrainSet trainSet) {
+        WriteResult writeResult = mongoTemplate.remove(trainSet);
     }
 
     @Override
-    public void addTrainSet(TrainingSet trainingSet) {
-
+    public void addTrainSet(TrainSet trainSet) {
+        mongoTemplate.insert(trainSet);
     }
 
 }

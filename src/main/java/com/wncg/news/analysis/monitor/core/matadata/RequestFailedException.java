@@ -1,13 +1,11 @@
-package com.wncg.news.analysis.monitor.core.unify;
+package com.wncg.news.analysis.monitor.core.matadata;
 
 public class RequestFailedException extends RuntimeException {
 
-    private static final long serialVersionUID = -167166478222434696L;
-
     public RequestFailedException(String msg, Exception cause){
-        super(msg, cause);
+    	super(msg, cause);
     }
-
+    
     public RequestFailedException(String msg) {
         super(msg);
     }

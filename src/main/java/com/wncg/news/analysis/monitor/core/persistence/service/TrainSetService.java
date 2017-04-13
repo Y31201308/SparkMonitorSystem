@@ -1,16 +1,19 @@
 package com.wncg.news.analysis.monitor.core.persistence.service;
 
-import com.wncg.news.analysis.monitor.core.event.Request;
+import com.wncg.news.analysis.monitor.core.event.OptionTrainSetRequest;
 import com.wncg.news.analysis.monitor.core.event.Response;
+import com.wncg.news.analysis.monitor.core.event.TrainSetRequest;
 
 public interface TrainSetService {
 
-    Response queryTrainSet(Request request);
+    Response queryTrainSetByPage(TrainSetRequest request);
 
-    Response addTrainSet(Request request);
+    Response queryTrainSetById(OptionTrainSetRequest request);
 
-    Response editTrainSet(Request request);
+    Response addTrainSet(TrainSetRequest request);
 
-    Response deleteTrainSet(Request request);
+    Response editTrainSet(OptionTrainSetRequest request);
+
+    Response deleteTrainSet(OptionTrainSetRequest request);
 
 }

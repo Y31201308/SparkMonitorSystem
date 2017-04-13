@@ -1,19 +1,21 @@
 package com.wncg.news.analysis.monitor.core.persistence.repository;
 
-import com.wncg.news.analysis.monitor.web.model.TrainingSet;
+import com.wncg.news.analysis.monitor.web.model.TrainSet;
 
 import java.util.List;
 
 public interface TrainSetRepository {
 
-    List<TrainingSet> queryTrainSet(int pageSize, int pageNum);
+    List<TrainSet> queryTrainSetByPage(int pageSize, int pageNum);
+
+    TrainSet queryTrainSetById(String id);
 
     Long queryTrainSetCount();
 
-    void updateTrainSet(TrainingSet oldTrainSet, TrainingSet newTrainSet);
+    TrainSet updateTrainSet(TrainSet oldTrainSet, TrainSet newTrainSet);
 
-    void deleteTrainSet(TrainingSet trainingSet);
+    void deleteTrainSet(TrainSet trainingSet);
 
-    void addTrainSet(TrainingSet trainingSet);
+    void addTrainSet(TrainSet trainingSet);
 
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>舆情监测平台</title>
+    <!-- Bootstrap -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../select2/css/select2.min.css" rel="stylesheet"/>
+
+    <script type="text/javascript" src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+
+    <!-- Include Required Prerequisites -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <!-- Include Date Range Picker -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+</head>
+<body>
+    <div id="header" th:include="header :: fragment-header"></div>
+
+    <div id="eventMsg" th:include="common :: fragment-eventMsg"></div>
+
+    <div style="padding-top: -15px;margin-top: -15px;padding-left: 20%;padding-right: 25%;">
+        <form th:action="@{/editTrainSet}" method="post" class="form-horizontal">
+            <input type="text" class="hidden" name="trainSetId" th:value="${trainSet.getId()}"/>
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label for="trainContent" class="col-sm-2 control-label">训练集</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="trainContent" id="trainContent" th:value="${trainSet.getContent()}"/>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label th:attr="aType=${trainSet.getLabelLev()}" for="labelType" class="col-sm-2 control-label">标签</label>
+                <div class="col-sm-10">
+                    <select class="js-example-basic-single js-states form-control" id="labelType" name="labelType">
+                        <option aType="0" value="NOT_ACCIDENT">非事故</option>
+                        <option aType="1" value="FIRE">消防事故</option>
+                        <option aType="2" value="SECURITY">治安事故</option>
+                        <option aType="3" value="CRIMINAL">刑事事故</option>
+                        <option aType="4" value="TRAFFIC">交通事故</option>
+                        <option aType="5" value="FOOD_DRUG_ENVIRONMENT">食药环事故</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        var aType = $("label[for='labelType']").attr("aType")
+        var options = $("#labelType option")
+        options.each(function () {
+            var optionType = $(this).attr("aType");
+            if(optionType == aType){
+                $(this).attr("selected", "selected");
+            }
+        })
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>舆情监测平台</title>
+    <!-- Bootstrap -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+
+    <script type="text/javascript" src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="header" th:include="header :: fragment-header"></div>
+
+    <div id="eventMsg" th:include="common :: fragment-eventMsg"></div>
+
+    <div style="padding-top: -15px;margin-top: -15px;padding-left: 20%;padding-right: 25%;">
+        <form th:action="@{/editNews}" method="post" class="form-horizontal">
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label for="newsUrl" class="col-sm-2 control-label">新闻链接</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="newsUrl" id="newsUrl" readonly="true" th:value="${newsDetails.getNewsUrl()}"/>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label for="newsTitle" class="col-sm-2 control-label">新闻标题</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="newsTitle" id="newsTitle"  th:value="${newsDetails.getNewsTitle()}"/>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label for="pureTitle" class="col-sm-2 control-label">PureTitle</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="pureTitle" id="pureTitle" th:value="${newsDetails.getPureTitle()}"/>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label for="keyWords" class="col-sm-2 control-label">关键字</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="keyWords" id="keyWords" th:value="${newsDetails.getKeyWords()}"/>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label for="ptime" class="col-sm-2 control-label">发布时间</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="ptime" id="ptime" th:value="${newsDetails.getPtime()}"/>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 35px;">
+                <label for="newsContent" class="col-sm-2 control-label">新闻内容</label>
+                <div class="col-sm-10">
+                    <textarea type="text" class="form-control" name="content" id="newsContent" th:text="${newsDetails.getContent()}"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
