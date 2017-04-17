@@ -7,8 +7,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 @Document(collection = "TrainSet")
-public class TrainSet {
+public class TrainSet implements Serializable{
 
     @Id
     private String id;
@@ -63,6 +65,7 @@ public class TrainSet {
 
     public void setAccidentType(AccidentType accidentType) {
         this.accidentType = accidentType;
+        labelLev = accidentType.getLabelTypeId();
     }
 
     @Override

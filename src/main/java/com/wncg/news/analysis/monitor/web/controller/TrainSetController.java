@@ -52,7 +52,7 @@ public class TrainSetController {
 
         try {
             TrainSet trainSet = new TrainSet();
-            trainSet.setContent(trainContext);
+            trainSet.setContent(trainContext.trim());
             trainSet.setAccidentType(AccidentType.getAccidentTypeByName(labelType));
             trainSet.setCreateTime(new DateTime());
 

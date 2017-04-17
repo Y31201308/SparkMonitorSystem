@@ -49,10 +49,8 @@ public class MongoTrainSetRepository implements TrainSetRepository{
         query.addCriteria(Criteria.where("_id").is(old.getId()));
 
         Update update = new Update();
-        if (!old.getContent().equals(news.getContent()))
-            update.set("content", news.getContent());
-        if (!old.getLabelLev().equals(news.getLabelLev()))
-            update.set("labelLev", news.getLabelLev());
+        update.set("content", news.getContent());
+        update.set("labelLev", news.getLabelLev());
 
         TrainSet result = mongoTemplate.findAndModify(query, update,
                 FindAndModifyOptions.options().upsert(false).returnNew(true),
@@ -69,6 +67,11 @@ public class MongoTrainSetRepository implements TrainSetRepository{
     @Override
     public void addTrainSet(TrainSet trainSet) {
         mongoTemplate.insert(trainSet);
+    }
+
+    @Override
+    public List<TrainSet> queryAllTrainSet() {
+        return mongoTemplate.findAll(TrainSet.class);
     }
 
 }

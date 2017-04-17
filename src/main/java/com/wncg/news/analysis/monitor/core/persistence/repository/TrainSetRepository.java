@@ -18,4 +18,6 @@ public interface TrainSetRepository {
 
     void addTrainSet(TrainSet trainingSet);
 
+    List<TrainSet> queryAllTrainSet();
+
 }

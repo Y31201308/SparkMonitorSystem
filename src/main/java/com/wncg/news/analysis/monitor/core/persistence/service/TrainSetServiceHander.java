@@ -91,6 +91,15 @@ public class TrainSetServiceHander implements TrainSetService{
             if (trainSet.getId() == null)
                 throw new RequestFailedException("训练集的ID号不能为空");
 
+            if (trainSet.getContent() == null)
+                throw new RequestFailedException("训练集的内容不能为空");
+
+            if (trainSet.getLabelLev() == null && trainSet.getAccidentType() == null)
+                throw new RequestFailedException("训练集的标签号不能为空");
+
+            if (trainSet.getLabelLev() == null)
+                trainSet.setLabelLev(trainSet.getAccidentType().getLabelTypeId());
+
             TrainSet oldTrainSet = trainSetRepository.queryTrainSetById(trainSet.getId());
 
             if (oldTrainSet == null)
