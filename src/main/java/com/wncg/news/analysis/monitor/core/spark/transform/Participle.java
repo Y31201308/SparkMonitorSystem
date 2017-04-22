@@ -1,4 +1,4 @@
-package com.wncg.news.analysis.monitor.core.spark.algorithmmodel;
+package com.wncg.news.analysis.monitor.core.spark.transform;
 
 public interface Participle {
 

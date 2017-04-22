@@ -1,13 +1,16 @@
 package com.wncg.news.analysis.IT;
 
-import com.wncg.news.analysis.monitor.core.spark.algorithmmodel.CountvectorizerModel;
-import com.wncg.news.analysis.monitor.core.spark.algorithmmodel.StammerParticiple;
-import com.wncg.news.analysis.monitor.core.spark.algorithmmodel.TFIDFModel;
-import com.wncg.news.analysis.monitor.core.spark.algorithmmodel.Word2VectorizerModel;
+import com.wncg.news.analysis.monitor.core.spark.algorithmmodel.ml.NaiveBayesClassify;
+import com.wncg.news.analysis.monitor.core.spark.transform.StammerParticiple;
+import com.wncg.news.analysis.monitor.core.spark.transform.TagsIndexTransform;
+import com.wncg.news.analysis.monitor.core.spark.vectors.CountvectorizerModel;
+import com.wncg.news.analysis.monitor.core.spark.vectors.TFIDFModel;
+import com.wncg.news.analysis.monitor.core.spark.vectors.Word2VectorizerModel;
 import com.wncg.news.analysis.monitor.web.config.MonitorSysSpringBootApplication;
+import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +44,13 @@ public class VectorModelTest {
     @Value("${hadoop.home.dir}")
     private String homeDirValue;
 
-    @Before
+    @Autowired
+    private TagsIndexTransform tagsIndexTransform;
+
+    @Autowired
+    private NaiveBayesClassify classifyModel;
+
+    @BeforeClass
     public void before(){
         System.setProperty(hadoopHomeName, homeDirValue);
     }
@@ -52,7 +61,10 @@ public class VectorModelTest {
                 .master("local[*]").appName("JavaWordCount").getOrCreate();
 
         List<Row> data = model.dataTransformToRDD(participle);
-        model.vectorTransform(spark, data);
+        Dataset<Row> featureData = model.vectorTransform(spark, data);
+        Dataset<Row> indexerData = tagsIndexTransform.stringIndexer(featureData).transform(featureData);
+        indexerData.show(false);
+
     }
 
     @Test
@@ -67,12 +79,20 @@ public class VectorModelTest {
 
     @Test
     public void Word2VectorizerModelTest(){
-        System.setProperty(hadoopHomeName, homeDirValue);
         SparkSession spark = SparkSession.builder()
                 .master("local[*]").appName("JavaWordCount").getOrCreate();
 
         List<Row> data = word2VectorizerModel.dataTransformToRDD(participle);
-        word2VectorizerModel.vectorTransform(spark, data);
+        Dataset<Row> featureData = word2VectorizerModel.vectorTransform(spark, data);
+        Dataset<Row> indexerData = tagsIndexTransform.stringIndexer(featureData).transform(featureData);
+        indexerData.show(false);
+
+        indexerData.select("features", "categoryIndex").foreach(row -> {
+            row.get(0);
+            row.get(1);
+        });
+//        RDD<LabeledPoint> labeledPointRDD = indexerData.select("features", "categoryIndex").rdd();
+
     }
 
 }

@@ -1,5 +1,6 @@
-package com.wncg.news.analysis.monitor.core.spark.algorithmmodel;
+package com.wncg.news.analysis.monitor.core.spark.vectors;
 
+import com.wncg.news.analysis.monitor.core.spark.transform.Participle;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;

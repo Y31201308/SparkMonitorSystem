@@ -1,9 +1,12 @@
-package com.wncg.news.analysis.monitor.core.spark.algorithmmodel;
+package com.wncg.news.analysis.monitor.core.spark.vectors;
 
 import com.wncg.news.analysis.monitor.core.persistence.repository.TrainSetRepository;
+import com.wncg.news.analysis.monitor.core.spark.transform.Participle;
 import com.wncg.news.analysis.monitor.web.model.TrainSet;
-import org.apache.spark.ml.feature.Word2Vec;
-import org.apache.spark.ml.feature.Word2VecModel;
+import org.apache.spark.ml.feature.HashingTF;
+import org.apache.spark.ml.feature.IDF;
+import org.apache.spark.ml.feature.IDFModel;
+import org.apache.spark.ml.feature.Tokenizer;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -19,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class Word2VectorizerModel implements VectorModel {
+public class TFIDFModel implements VectorModel {
+
     @Autowired
     private TrainSetRepository repository;
 
@@ -29,7 +33,7 @@ public class Word2VectorizerModel implements VectorModel {
         List<TrainSet> trainSetList = repository.queryAllTrainSet();
         for (TrainSet trainSet : trainSetList){
             String sentence = participle.participle(trainSet.getContent());
-            rowList.add(RowFactory.create(sentence.split(" "), trainSet.getLabelLev()));
+            rowList.add(RowFactory.create(sentence, trainSet.getLabelLev()));
         }
         return rowList;
     }
@@ -37,7 +41,7 @@ public class Word2VectorizerModel implements VectorModel {
     @Override
     public StructType structTypeSchema() {
         StructType schema = new StructType(new StructField[]{
-                new StructField("sentence", DataTypes.createArrayType(DataTypes.StringType), false, Metadata.empty()),
+                new StructField("sentence", DataTypes.StringType, false, Metadata.empty()),
                 new StructField("label", DataTypes.IntegerType, false, Metadata.empty())
         });
         return schema;
@@ -46,19 +50,29 @@ public class Word2VectorizerModel implements VectorModel {
     @Override
     public Dataset<Row> vectorTransform(SparkSession spark, List<Row> data) {
         StructType schema = structTypeSchema();
-        Dataset<Row> documentDF = spark.createDataFrame(data, schema);
 
-        // Learn a mapping from words to Vectors.
-        Word2Vec word2Vec = new Word2Vec()
+        Dataset<Row> sentenceData = spark.createDataFrame(data, schema);
+
+        Tokenizer tokenizer = new Tokenizer()
                 .setInputCol("sentence")
-                .setOutputCol("result")
-                .setVectorSize(3)
-                .setMinCount(0);
+                .setOutputCol("words");
 
-        Word2VecModel model = word2Vec.fit(documentDF);
-        Dataset<Row> featurizedData = model.transform(documentDF);
-        featurizedData.show(false);
+        Dataset<Row> wordsData = tokenizer.transform(sentenceData);
 
-        return featurizedData;
+        int numFeatures = 16;
+        HashingTF hashingTF = new HashingTF()
+                .setInputCol("words")
+                .setOutputCol("rawFeatures")
+                .setNumFeatures(numFeatures);
+
+        Dataset<Row> featurizedData = hashingTF.transform(wordsData);
+
+        //使用IDF来对单纯的词频特征向量进行修正，使其更能体现不同词汇对文本的区别能力
+        // alternatively, CountVectorizer can also be used to get term frequency vectors
+        IDF idf = new IDF().setInputCol("rawFeatures").setOutputCol("features");
+        IDFModel idfModel = idf.fit(featurizedData);
+        Dataset<Row> rescaledData = idfModel.transform(featurizedData);
+
+        return rescaledData.drop("rawFeatures");
     }
 }

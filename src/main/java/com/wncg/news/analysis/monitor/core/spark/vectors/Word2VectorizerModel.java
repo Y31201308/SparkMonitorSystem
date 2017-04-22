@@ -1,9 +1,10 @@
-package com.wncg.news.analysis.monitor.core.spark.algorithmmodel;
+package com.wncg.news.analysis.monitor.core.spark.vectors;
 
 import com.wncg.news.analysis.monitor.core.persistence.repository.TrainSetRepository;
+import com.wncg.news.analysis.monitor.core.spark.transform.Participle;
 import com.wncg.news.analysis.monitor.web.model.TrainSet;
-import org.apache.spark.ml.feature.CountVectorizer;
-import org.apache.spark.ml.feature.CountVectorizerModel;
+import org.apache.spark.ml.feature.Word2Vec;
+import org.apache.spark.ml.feature.Word2VecModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -18,11 +19,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 旨在通过计数来将一个文档转换为向量
- */
 @Component
-public class CountvectorizerModel implements VectorModel {
+public class Word2VectorizerModel implements VectorModel {
 
     @Autowired
     private TrainSetRepository repository;
@@ -50,18 +48,17 @@ public class CountvectorizerModel implements VectorModel {
     @Override
     public Dataset<Row> vectorTransform(SparkSession spark, List<Row> data) {
         StructType schema = structTypeSchema();
-        Dataset<Row> df = spark.createDataFrame(data, schema);
+        Dataset<Row> documentDF = spark.createDataFrame(data, schema);
 
-        // fit a CountVectorizerModel from the corpus
-        CountVectorizerModel cvModel = new CountVectorizer()
+        // Learn a mapping from words to Vectors.
+        Word2Vec word2Vec = new Word2Vec()
                 .setInputCol("sentence")
-                .setOutputCol("feature")
-                .setVocabSize(3)
-                .setMinDF(2)
-                .fit(df);
+                .setOutputCol("features")
+                .setVectorSize(20)
+                .setMinCount(0);
 
-        Dataset<Row> featurizedData = cvModel.transform(df);
-        featurizedData.show(false);
+        Word2VecModel model = word2Vec.fit(documentDF);
+        Dataset<Row> featurizedData = model.transform(documentDF);
 
         return featurizedData;
     }

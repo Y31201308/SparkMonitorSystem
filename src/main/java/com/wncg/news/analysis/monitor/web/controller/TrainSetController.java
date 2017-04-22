@@ -23,12 +23,16 @@ public class TrainSetController {
     @RequestMapping("/queryTrainSetByPage")
     public String queryTrainSetByPage(@RequestParam(value="pageSize", required=false) Integer pageSize,
                                 @RequestParam(value="pageNo", required=false) Integer pageNumberParam,
+                                @RequestParam(value="labelType", required=false) Integer labelType,
                                 Model model){
         if (pageSize == null)
             pageSize = QueryNewsRequest.DEFAULT_EVERY_PAGE_COUNT;
         if (pageNumberParam == null)
             pageNumberParam = QueryNewsRequest.DEFAULT_PAGE_NUM;
+        if (labelType == null)
+            labelType = -1;
         TrainSetRequest request = new TrainSetRequest(pageSize , pageNumberParam);
+        request.setLabelType(labelType);
 
         Response<TrainSet> response = trainSetService.queryTrainSetByPage(request);
 
@@ -37,6 +41,8 @@ public class TrainSetController {
         model.addAttribute("totalPage" , response.getTotalPage());
         model.addAttribute("trainsetList" , response.getData());
         model.addAttribute("currentPageNum", response.getCurrentPageNum());
+
+        model.addAttribute("labelType" , labelType);
 
         return "training_set";
     }
@@ -114,10 +120,12 @@ public class TrainSetController {
         System.out.println("trainContent==="+trainContent);
         System.out.println("labelType==="+labelType);
 
+        AccidentType accidentType = AccidentType.getAccidentTypeByName(labelType);
+
         TrainSet trainSet = new TrainSet();
         trainSet.setId(trainSetId);
         trainSet.setContent(trainContent);
-        trainSet.setAccidentType(AccidentType.getAccidentTypeByName(labelType));
+        trainSet.setAccidentType(accidentType);
         OptionTrainSetRequest request = new OptionTrainSetRequest();
         request.setTrainSet(trainSet);
 
@@ -127,8 +135,8 @@ public class TrainSetController {
         }else {
             redirectAttributes.addFlashAttribute("eventResult",  new EventResult(response.getStatus(), "编辑训练集成功"));
         }
-        redirectAttributes.addAttribute("trainSetId", trainSetId);
-        return "redirect:/queryTrainSetById";
+        redirectAttributes.addAttribute("labelType", accidentType.getLabelTypeId());
+        return "redirect:/queryTrainSetByPage";
     }
 
 }

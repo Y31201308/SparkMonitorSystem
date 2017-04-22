@@ -1,11 +1,10 @@
-package com.wncg.news.analysis.monitor.core.spark.algorithmmodel;
+package com.wncg.news.analysis.monitor.core.spark.vectors;
 
 import com.wncg.news.analysis.monitor.core.persistence.repository.TrainSetRepository;
+import com.wncg.news.analysis.monitor.core.spark.transform.Participle;
 import com.wncg.news.analysis.monitor.web.model.TrainSet;
-import org.apache.spark.ml.feature.HashingTF;
-import org.apache.spark.ml.feature.IDF;
-import org.apache.spark.ml.feature.IDFModel;
-import org.apache.spark.ml.feature.Tokenizer;
+import org.apache.spark.ml.feature.CountVectorizer;
+import org.apache.spark.ml.feature.CountVectorizerModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -20,8 +19,11 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 旨在通过计数来将一个文档转换为向量
+ */
 @Component
-public class TFIDFModel implements VectorModel {
+public class CountvectorizerModel implements VectorModel {
 
     @Autowired
     private TrainSetRepository repository;
@@ -32,7 +34,7 @@ public class TFIDFModel implements VectorModel {
         List<TrainSet> trainSetList = repository.queryAllTrainSet();
         for (TrainSet trainSet : trainSetList){
             String sentence = participle.participle(trainSet.getContent());
-            rowList.add(RowFactory.create(sentence, trainSet.getLabelLev()));
+            rowList.add(RowFactory.create(sentence.split(" "), trainSet.getLabelLev()));
         }
         return rowList;
     }
@@ -40,7 +42,7 @@ public class TFIDFModel implements VectorModel {
     @Override
     public StructType structTypeSchema() {
         StructType schema = new StructType(new StructField[]{
-                new StructField("sentence", DataTypes.StringType, false, Metadata.empty()),
+                new StructField("sentence", DataTypes.createArrayType(DataTypes.StringType), false, Metadata.empty()),
                 new StructField("label", DataTypes.IntegerType, false, Metadata.empty())
         });
         return schema;
@@ -49,30 +51,19 @@ public class TFIDFModel implements VectorModel {
     @Override
     public Dataset<Row> vectorTransform(SparkSession spark, List<Row> data) {
         StructType schema = structTypeSchema();
+        Dataset<Row> df = spark.createDataFrame(data, schema);
 
-        Dataset<Row> sentenceData = spark.createDataFrame(data, schema);
-
-        Tokenizer tokenizer = new Tokenizer()
+        // fit a CountVectorizerModel from the corpus
+        CountVectorizerModel cvModel = new CountVectorizer()
                 .setInputCol("sentence")
-                .setOutputCol("words");
+                .setOutputCol("feature")
+                .setVocabSize(3)
+                .setMinDF(2)
+                .fit(df);
 
-        Dataset<Row> wordsData = tokenizer.transform(sentenceData);
-
-        int numFeatures = 20;
-        HashingTF hashingTF = new HashingTF()
-                .setInputCol("words")
-                .setOutputCol("rawFeatures")
-                .setNumFeatures(numFeatures);
-
-        Dataset<Row> featurizedData = hashingTF.transform(wordsData);
+        Dataset<Row> featurizedData = cvModel.transform(df);
         featurizedData.show(false);
 
-        // alternatively, CountVectorizer can also be used to get term frequency vectors
-        IDF idf = new IDF().setInputCol("rawFeatures").setOutputCol("features");
-        IDFModel idfModel = idf.fit(featurizedData);
-        Dataset<Row> rescaledData = idfModel.transform(featurizedData);
-        rescaledData.show(false);
-
-        return rescaledData;
+        return featurizedData;
     }
 }

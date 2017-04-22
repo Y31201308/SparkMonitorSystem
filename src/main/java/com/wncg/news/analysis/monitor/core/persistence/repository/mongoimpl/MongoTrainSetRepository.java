@@ -21,8 +21,10 @@ public class MongoTrainSetRepository implements TrainSetRepository{
     private MongoTemplate mongoTemplate;
 
     @Override
-    public List<TrainSet> queryTrainSetByPage(int pageSize, int pageNum) {
+    public List<TrainSet> queryTrainSetByPage(int pageSize, int pageNum,int labelType) {
         Query query = new Query();
+        if (labelType != -1)
+            query.addCriteria(Criteria.where("labelLev").is(labelType));
         query.skip(pageSize * pageNum)
                 .with(new Sort(new Sort.Order(Sort.Direction.DESC,"createTime")))
                 .limit(pageSize);
@@ -39,8 +41,11 @@ public class MongoTrainSetRepository implements TrainSetRepository{
     }
 
     @Override
-    public Long queryTrainSetCount() {
-        return mongoTemplate.count(new Query() , "TrainSet");
+    public Long queryTrainSetCount(int labelType) {
+        Query query = new Query();
+        if (labelType != -1)
+            query.addCriteria(Criteria.where("labelLev").is(labelType));
+        return mongoTemplate.count(query , "TrainSet");
     }
 
     @Override

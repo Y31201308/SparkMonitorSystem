@@ -1,4 +1,4 @@
-package com.wncg.news.analysis.monitor.core.spark.algorithmmodel;
+package com.wncg.news.analysis.monitor.core.spark.transform;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import org.springframework.stereotype.Component;

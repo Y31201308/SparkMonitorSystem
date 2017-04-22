@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface TrainSetRepository {
 
-    List<TrainSet> queryTrainSetByPage(int pageSize, int pageNum);
+    List<TrainSet> queryTrainSetByPage(int pageSize, int pageNum, int labelType);
 
     TrainSet queryTrainSetById(String id);
 
-    Long queryTrainSetCount();
+    Long queryTrainSetCount(int labelType);
 
     TrainSet updateTrainSet(TrainSet oldTrainSet, TrainSet newTrainSet);
 

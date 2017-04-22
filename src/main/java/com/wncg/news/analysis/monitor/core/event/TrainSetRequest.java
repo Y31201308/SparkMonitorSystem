@@ -14,6 +14,7 @@ public class TrainSetRequest{
     private int currentPageNum = DEFAULT_PAGE_NUM;
 
     private TrainSet trainSet;
+    private int labelType;
 
     public TrainSetRequest() {
 
@@ -49,5 +50,13 @@ public class TrainSetRequest{
 
     public void setTrainSet(TrainSet trainSet) {
         this.trainSet = trainSet;
+    }
+
+    public int getLabelType() {
+        return labelType;
+    }
+
+    public void setLabelType(int labelType) {
+        this.labelType = labelType;
     }
 }

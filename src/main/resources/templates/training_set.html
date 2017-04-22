@@ -24,6 +24,19 @@
                 <button type="button" class="btn btn-primary">添加训练集</button>
             </a>
         </div>
+        <div class="form-group" style="margin-bottom: 35px;">
+            <div class="col-sm-10" style="width: 20em">
+                <select class="js-example-basic-single js-states form-control" id="labelType" name="labelType">
+                    <option value="-1">全部训练集</option>
+                    <option value="0">非事故</option>
+                    <option value="1">消防事故</option>
+                    <option value="2">治安事故</option>
+                    <option value="3">刑事事故</option>
+                    <option value="4">交通事故</option>
+                    <option value="5">食药环事故</option>
+                </select>
+            </div>
+        </div>
         <table class="table table-hover table-bordered">
             <tr>
                 <th>内容</th>
@@ -43,9 +56,9 @@
                                 操作 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" style="min-width: 30px;">
-                                <li><a onclick="option(this)" method="/deleteTrainSet" th:attr="trainSetId=${trainset.getId()}">删除</a></li>
+                                <li><a onclick="optionAction(this)" method="/deleteTrainSet" th:attr="trainSetId=${trainset.getId()}">删除</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a onclick="option(this)" method="/queryTrainSetById" th:attr="trainSetId=${trainset.getId()}">编辑</a></li>
+                                <li><a onclick="optionAction(this)" method="/queryTrainSetById" th:attr="trainSetId=${trainset.getId()}">编辑</a></li>
                             </ul>
                         </div>
                     </td>
@@ -56,6 +69,7 @@
             <form id="pageForm" th:action="@{/queryTrainSetByPage}" method="POST">
                 <input class="hidden" name="pageSize" th:value="${pageSize}"/>
                 <input id="pageNum" class="hidden" name="pageNo" th:value="${currentPageNum}"/>
+                <input id="labelTypeInput" class="hidden" name="labelType" th:value="${labelType}"/>
             </form>
             <nav aria-label="Page navigation" style="float: left;">
                 <p>
@@ -94,12 +108,28 @@
             $("#pageForm").submit()
         })
 
-        var option = (function (obj) {
+        var optionAction = (function (obj) {
             var method = $(obj).attr("method")
             var trainSetId = $(obj).attr("trainSetId")
             $("#optionForm").attr("action", method)
             $("#trainSetId").attr("value", trainSetId)
             $("#optionForm").submit()
+        })
+
+        var aType = $("#labelTypeInput").val();
+
+        var options = $("#labelType option")
+        options.each(function () {
+            var optionType = $(this).attr("aType");
+            if(optionType == aType){
+                $(this).attr("selected", "selected");
+            }
+        })
+
+        $("#labelType").change(function () {
+            var optionType = $(this).val()
+            $("#labelTypeInput").attr("value",optionType)
+            $("#pageForm").submit()
         })
     </script>
 </body>

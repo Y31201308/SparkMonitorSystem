@@ -23,8 +23,9 @@ public class TrainSetServiceHander implements TrainSetService{
     public Response queryTrainSetByPage(TrainSetRequest request) {
         Response<TrainSet> response = new Response<>();
         try {
-            List<TrainSet> data = trainSetRepository.queryTrainSetByPage(request.getPageSize(), request.getCurrentPageNum());
-            int count = trainSetRepository.queryTrainSetCount().intValue();
+            List<TrainSet> data = trainSetRepository.queryTrainSetByPage(
+                    request.getPageSize(), request.getCurrentPageNum(),request.getLabelType());
+            int count = trainSetRepository.queryTrainSetCount(request.getLabelType()).intValue();
 
             response.setData(data);
             response.setPageSize(request.getPageSize());
